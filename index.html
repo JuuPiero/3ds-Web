@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3DS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a1a2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #n3ds {
+            position: relative;
+            display: inline-block;
+        }
+
+        #n3ds .bg {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        #n3ds canvas {
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="n3ds">
+        <img src="test.png" alt="3DS" class="bg">
+        <canvas id="screen-top"></canvas>
+        <canvas id="screen-bottom"></canvas>
+    </div>
+</body>
+
+<!-- Framework -->
+<script src="n3ds.js"></script>
+
+<!-- Game (đổi src để chạy game khác) -->
+<script src="games/bubble-pop.js"></script>
+
+<script>
+    // ====== Khởi tạo & chạy ======
+    const n3ds = new N3DS({ bg: 'test.png' });
+    // startBubblePop(n3ds);
+
+    class Ball {
+
+        constructor() {
+            this.radius = 30;
+            this.position = {x: 100, y: 50}
+        }
+
+        draw(ctx) {
+            ctx.beginPath();
+            ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = 'orange';
+            ctx.fill();
+        }
+        update() {
+            if(this.position.y < n3ds.bottom) {
+
+            }
+        }
+    }
+
+    const ball = new Ball();
+
+    // -------------------------------------------------
+    // 💡 HƯỚNG DẪN: Nếu muốn tự vẽ, bỏ dòng trên và
+    //    dùng API bên dưới:
+    // -------------------------------------------------
+    //
+    // const n3ds = new N3DS({ bg: 'test.png' });
+    //
+    // // === Lắng nghe touch màn dưới ===
+    n3ds.bottom.onTap = (x, y) => { /* chạm */ };
+    n3ds.bottom.onMove = (x, y) => { /* kéo  */ };
+    n3ds.bottom.onRelease = () => { /* thả  */ };
+    //
+    // // === Game loop ===
+    n3ds.run((dt, time) => {
+        // dt = thời gian giữa 2 frame (giây)
+        // time = tổng thời gian (ms)
+
+        // --- Màn trên ---
+        n3ds.top.clear('#000');                         // xóa + fill đen
+        n3ds.top.drawText('Hello!', 100);               // text căn giữa
+        n3ds.top.drawText('Score: 42', 50, {            // text tùy chỉnh
+            color: '#ffe66d',
+            font: 'bold 32px Arial',
+            align: 'left',
+        });
+        // n3ds.top.drawCircle(200, 200, 30, 'red');       // vẽ tròn
+        n3ds.top.drawRect(10, 10, 100, 50, 'blue');     // vẽ chữ nhật
+
+        // --- Màn dưới ---
+        n3ds.bottom.clear('#fff');
+
+        const bctx = n3ds.bottom.ctx;
+        ball.update()
+        ball.draw(bctx)
+        // bctx.beginPath();
+        // bctx.arc(100, 100, 50, 0, Math.PI * 2);
+        // bctx.fillStyle = 'orange';
+        // bctx.fill();
+
+
+        // n3ds.bottom.drawCircle(touchX, touchY, 20, 'lime');
+
+        // --- Hoặc dùng ctx trực tiếp ---
+        // const ctx = n3ds.top.ctx;
+        // ctx.beginPath();
+        // ctx.arc(100, 100, 50, 0, Math.PI * 2);
+        // ctx.fillStyle = 'orange';
+        // ctx.fill();
+    });
+</script>
+
+</html>
